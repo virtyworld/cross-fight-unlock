@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f0e28164a64b44babb654a55708ca6, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  playerMoveSpeed: 5
+  playerJumpForce: 10
+  road1Speed: 2
+  road1Density: 0.5
+  road2Speed: 3
+  road2Density: 0.7
+  road3Speed: 4
+  road3Density: 0.9
+  obstacleSpawnInterval: 2
+  maxObstaclesPerRoad: 5
+  startPoint: {x: 0, y: 0, z: 0}
+  finishPoint: {x: 0, y: 0, z: 20}
+  roadWidth: 3
+  roadLength: 20
