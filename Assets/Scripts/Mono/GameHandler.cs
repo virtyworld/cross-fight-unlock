@@ -22,7 +22,7 @@ namespace CrossFightUnlock.Mono
 
         [Header("Managers")]
         [SerializeField] private InputManager _inputManager;
-
+        [SerializeField] private ObjectLinesManager _objectLinesManager;
         [Header("Game State")]
         [SerializeField] private bool _isGamePaused = false;
         [SerializeField] private bool _isGameInitialized = false;
@@ -43,6 +43,7 @@ namespace CrossFightUnlock.Mono
             InitInputManager();
             InitPlayer();
             StartGame();
+            InitObjectLinesManager();
         }
 
         private void OnDestroy()
@@ -89,7 +90,11 @@ namespace CrossFightUnlock.Mono
         {
             _playerPresenter.Initialize(_gameSettings, _gameEvents, _playerSpawnPoint.position);
         }
-
+        private void InitObjectLinesManager()
+        {
+            _objectLinesManager.Initialize();
+            _objectLinesManager.StartAllLines();
+        }
 
 
         /// <summary>

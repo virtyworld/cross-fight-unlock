@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a50c51ca7f2c064582348d2b5dc4671, type: 3}
+  m_Name: Line2Settings
+  m_EditorClassIdentifier: 
+  _lineStartPosition: {x: 49, y: 1.1, z: 0}
+  _lineEndPosition: {x: -49, y: 1.1, z: 0}
+  _lineYPosition: 1
+  _movementSpeed: 10
+  _isRightDirection: 0
+  _objectPrefab: {fileID: 6851250671495784491, guid: 72ae33696edecd543b20750b8a54dd93, type: 3}
+  _minObjectsPerSpawn: 1
+  _maxObjectsPerSpawn: 3
+  _spawnRadius: 1
+  _minSpawnInterval: 0.1
+  _maxSpawnInterval: 2
+  _maxObjectsOnLine: 20
+  _minDistanceBetweenObjects: 1
+  _useRandomDensity: 1
