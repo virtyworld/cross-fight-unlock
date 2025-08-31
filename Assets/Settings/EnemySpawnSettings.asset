@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8bbed1b609bd634a8b0b998dd06a64a, type: 3}
+  m_Name: EnemySpawnSettings
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 2951453926125956679, guid: e6ae0bbae5e7fcd43bdf4530483fc36e, type: 3}
+  enemiesToSpawn: 2
+  spawnRadius: 20
+  minDistanceFromPlayer: 10
+  maxDistanceFromPlayer: 20
+  spawnDelay: 0.01
+  spawnOnTriggerEnter: 1
+  enemiesAggressive: 1
+  enemyDetectionRange: 100

@@ -50,12 +50,9 @@ namespace CrossFightUnlock.Views
 
             _isInitialized = true;
             _isActive = true;
-            Debug.Log("ObjectView initialized");
         }
         private void FixedUpdate()
         {
-            Debug.Log($"[ObjectView] FixedUpdate {gameObject.name} _isInitialized {_isInitialized} _isActive {_isActive} _isMoving {_isMoving} _currentSpeed {_currentSpeed} _movementDirection {_movementDirection} Rigidbody {Rigidbody} "); if (!_isInitialized || !_isActive || !_isMoving) return;
-
             // Движение с помощью Rigidbody
             if (Rigidbody != null)
             {
@@ -66,13 +63,12 @@ namespace CrossFightUnlock.Views
         public void SetPosition(Vector3 position)
         {
             if (!_isInitialized) return;
-            Debug.Log($"[ObjectView] SetPosition {position}");
+
             transform.position = position;
         }
 
         public void Move(Vector3 direction, float speed)
         {
-            Debug.Log($"[ObjectView] Move {direction} {speed} _isInitialized {_isInitialized} _isActive {_isActive}");
             if (!_isInitialized || !_isActive) return;
 
             _movementDirection = direction.normalized;

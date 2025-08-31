@@ -28,6 +28,15 @@ namespace CrossFightUnlock.Data
         private UnityEvent onUIOpen;
         private UnityEvent onUIClose;
 
+        // Enemy Spawn Events
+        private UnityEvent onEnemySpawnTriggered;
+        private UnityEvent<GameObject> onEnemySpawned;
+        private UnityEvent<GameObject> onEnemyDestroyed;
+
+        // Finish Trigger Events
+        private UnityEvent<GameObject> onFinishTriggerEntered;
+        private UnityEvent<GameObject> onFinishTriggerExited;
+
         // Cleanup Events
         private UnityEvent onCleanup;
 
@@ -49,6 +58,13 @@ namespace CrossFightUnlock.Data
 
         public UnityEvent OnUIOpen => onUIOpen;
         public UnityEvent OnUIClose => onUIClose;
+
+        public UnityEvent OnEnemySpawnTriggered => onEnemySpawnTriggered;
+        public UnityEvent<GameObject> OnEnemySpawned => onEnemySpawned;
+        public UnityEvent<GameObject> OnEnemyDestroyed => onEnemyDestroyed;
+
+        public UnityEvent<GameObject> OnFinishTriggerEntered => onFinishTriggerEntered;
+        public UnityEvent<GameObject> OnFinishTriggerExited => onFinishTriggerExited;
 
         public UnityEvent OnCleanup => onCleanup;
 
@@ -76,6 +92,13 @@ namespace CrossFightUnlock.Data
             onUIOpen = new UnityEvent();
             onUIClose = new UnityEvent();
 
+            onEnemySpawnTriggered = new UnityEvent();
+            onEnemySpawned = new UnityEvent<GameObject>();
+            onEnemyDestroyed = new UnityEvent<GameObject>();
+
+            onFinishTriggerEntered = new UnityEvent<GameObject>();
+            onFinishTriggerExited = new UnityEvent<GameObject>();
+
             onCleanup = new UnityEvent();
         }
 
@@ -101,6 +124,13 @@ namespace CrossFightUnlock.Data
 
             onUIOpen?.RemoveAllListeners();
             onUIClose?.RemoveAllListeners();
+
+            onEnemySpawnTriggered?.RemoveAllListeners();
+            onEnemySpawned?.RemoveAllListeners();
+            onEnemyDestroyed?.RemoveAllListeners();
+
+            onFinishTriggerEntered?.RemoveAllListeners();
+            onFinishTriggerExited?.RemoveAllListeners();
 
             onCleanup?.RemoveAllListeners();
         }

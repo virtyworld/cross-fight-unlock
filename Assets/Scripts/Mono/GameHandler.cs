@@ -3,6 +3,7 @@ using CrossFightUnlock.Data;
 using CrossFightUnlock.Managers;
 using CrossFightUnlock.Presenters;
 using CrossFightUnlock.Views;
+using CrossFightUnlock.Interfaces;
 using System.Collections;
 
 namespace CrossFightUnlock.Mono
@@ -23,6 +24,8 @@ namespace CrossFightUnlock.Mono
         [Header("Managers")]
         [SerializeField] private InputManager _inputManager;
         [SerializeField] private ObjectLinesManager _objectLinesManager;
+
+        [SerializeField] private EnemySpawnManager _enemySpawnManager;
         [Header("Game State")]
         [SerializeField] private bool _isGamePaused = false;
         [SerializeField] private bool _isGameInitialized = false;
@@ -42,8 +45,9 @@ namespace CrossFightUnlock.Mono
             SubscribeToEvents();
             InitInputManager();
             InitPlayer();
-            StartGame();
             InitObjectLinesManager();
+            InitEnemySpawnManager();
+            StartGame();
         }
 
         private void OnDestroy()
@@ -94,6 +98,10 @@ namespace CrossFightUnlock.Mono
         {
             _objectLinesManager.Initialize();
             _objectLinesManager.StartAllLines();
+        }
+        private void InitEnemySpawnManager()
+        {
+            _enemySpawnManager.Initialize(_gameEvents);
         }
 
 

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - EndOfTheRoad
+  - FinishTrigger
   layers:
   - Default
   - TransparentFX

@@ -305,7 +305,6 @@ namespace CrossFightUnlock.Models
                 objectView.SetPosition(spawnPosition);
 
                 Vector3 direction = _currentDirection ? Vector3.right : Vector3.left;
-                Debug.Log($"_currentDirection {_currentDirection} direction {direction} _currentSpeed {_currentSpeed}");
                 objectView.Move(direction, _currentSpeed);
             }
 
