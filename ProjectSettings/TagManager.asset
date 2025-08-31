@@ -6,6 +6,7 @@ TagManager:
   tags:
   - EndOfTheRoad
   - FinishTrigger
+  - Enemy
   layers:
   - Default
   - TransparentFX
