@@ -1,44 +1,29 @@
 using UnityEngine;
 using CrossFightUnlock.Interfaces;
 using CrossFightUnlock.Data;
+using CrossFightUnlock.Models;
 using System.Collections;
 
 namespace CrossFightUnlock.Views
 {
     /// <summary>
-    /// Простое представление врага
+    /// Представление врага, отвечающее за визуальное отображение и физику
     /// </summary>
     public class EnemyView : MonoBehaviour, IView
     {
-        [Header("Enemy Settings")]
-        [SerializeField] private float moveSpeed = 5f;
-        [SerializeField] private float detectionRange = 100f;
-        [SerializeField] private float attackRange = 2f;
-        [SerializeField] private float rotationSpeed = 3f;
-        [SerializeField] private float attackCooldown = 1f;
-        [SerializeField] private float stoppingDistance = 1.5f;
-        [SerializeField] private int damage = 10;
-
         [Header("Components")]
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private Rigidbody enemyRigidbody;
         [SerializeField] private Animator enemyAnimator;
 
+        // Ссылки на презентер и события
+        private GameEvents _gameEvents;
+        private EnemyModel _enemyModel; // Только для чтения данных
+
         // Состояние
         private bool _isInitialized = false;
         private bool _isVisible = true;
-        private bool _isAggressive = true;
-        private bool _isPlayerDetected = false;
-        private bool _isAttacking = false;
-        private bool _canAttack = true;
-        private float _lastAttackTime = 0f;
-        private Transform _playerTransform;
-        private Vector3 _startPosition;
-        private Vector3 _lastPlayerPosition;
-        private float _health = 100f;
-        private float _maxHealth = 100f;
-        private float _distanceToPlayer;
-
+        private bool _isAttackCoroutineRunning = false;
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -54,16 +39,6 @@ namespace CrossFightUnlock.Views
                 enemyRigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             }
 
-            // Сохраняем начальную позицию
-            _startPosition = transform.position;
-
-            // Находим игрока
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                _playerTransform = player.transform;
-            }
-
             _isInitialized = true;
             Debug.Log($"EnemyView initialized: {gameObject.name}");
         }
@@ -71,19 +46,24 @@ namespace CrossFightUnlock.Views
         /// <summary>
         /// Инициализация с настройками поведения
         /// </summary>
-        public void InitializeWithSettings(EnemySpawnSettings settings)
+        public void InitializeWithSettings(EnemySpawnSettings settings, GameEvents gameEvents)
         {
             if (!_isInitialized) Initialize();
 
-            _isAggressive = settings.EnemiesAggressive;
-            detectionRange = settings.EnemyDetectionRange;
-            moveSpeed = settings.EnemyMoveSpeed;
-            rotationSpeed = settings.EnemyRotationSpeed;
-            attackRange = settings.EnemyAttackRange;
-            attackCooldown = settings.EnemyAttackCooldown;
-            stoppingDistance = settings.EnemyStoppingDistance;
+            _gameEvents = gameEvents;
 
-            Debug.Log($"EnemyView initialized with settings: Aggressive={_isAggressive}, DetectionRange={detectionRange}");
+            // Подписываемся на событие смерти врага
+            _gameEvents.OnEnemyDeath.AddListener(OnEnemyDeath);
+
+            Debug.Log($"EnemyView initialized with settings");
+        }
+
+        /// <summary>
+        /// Установка модели для чтения данных (вызывается презентером)
+        /// </summary>
+        public void SetModel(EnemyModel model)
+        {
+            _enemyModel = model;
         }
 
         public void Show()
@@ -104,20 +84,29 @@ namespace CrossFightUnlock.Views
 
         public void Cleanup()
         {
+            // Отписываемся от событий
+            if (_gameEvents != null)
+            {
+                _gameEvents.OnEnemyDeath.RemoveListener(OnEnemyDeath);
+            }
+
+            _enemyModel = null;
+            _gameEvents = null;
             _isInitialized = false;
+            _isAttackCoroutineRunning = false;
         }
 
         private void Update()
         {
-            if (!_isInitialized || !_isVisible) return;
+            if (!_isInitialized || !_isVisible || _enemyModel == null) return;
 
-            UpdatePlayerDetection();
-            UpdateBehavior();
+            // Обновляем анимации
+            UpdateAnimations();
         }
 
         private void FixedUpdate()
         {
-            if (!_isInitialized || !_isVisible) return;
+            if (!_isInitialized || !_isVisible || _enemyModel == null) return;
 
             UpdateMovement();
         }
@@ -127,16 +116,15 @@ namespace CrossFightUnlock.Views
         /// </summary>
         private void MoveTowardsPlayer()
         {
-            if (_playerTransform == null) return;
+            if (_enemyModel == null) return;
 
-            Vector3 directionToPlayer = (_playerTransform.position - transform.position).normalized;
-            directionToPlayer.y = 0; // Игнорируем вертикальное движение
+            Vector3 directionToPlayer = _enemyModel.GetDirectionToPlayer();
 
             // Поворачиваемся к игроку
             if (directionToPlayer != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _enemyModel.RotationSpeed * Time.fixedDeltaTime);
             }
 
             // Поворачиваем спрайт (если есть)
@@ -146,15 +134,19 @@ namespace CrossFightUnlock.Views
             }
 
             // Двигаемся к игроку
-            Vector3 movement = directionToPlayer * moveSpeed * Time.fixedDeltaTime;
+            Vector3 movement = directionToPlayer * _enemyModel.MoveSpeed * Time.fixedDeltaTime;
 
             if (enemyRigidbody != null)
             {
                 enemyRigidbody.MovePosition(enemyRigidbody.position + movement);
+                // Обновляем позицию в модели после движения
+                _enemyModel.SetPosition(enemyRigidbody.position);
             }
             else
             {
                 transform.position += movement;
+                // Обновляем позицию в модели после движения
+                _enemyModel.SetPosition(transform.position);
             }
         }
 
@@ -174,31 +166,41 @@ namespace CrossFightUnlock.Views
         /// </summary>
         private void ReturnToStartPosition()
         {
-            if (enemyRigidbody == null) return;
+            if (_enemyModel == null) return;
 
-            Vector3 direction = (_startPosition - transform.position).normalized;
-            direction.y = 0;
+            Vector3 direction = _enemyModel.GetDirectionToStartPosition();
 
-            if (Vector3.Distance(transform.position, _startPosition) > 1f)
+            if (Vector3.Distance(transform.position, _enemyModel.Position) > 1f)
             {
-                enemyRigidbody.linearVelocity = new Vector3(direction.x * moveSpeed * 0.5f, enemyRigidbody.linearVelocity.y, direction.z * moveSpeed * 0.5f);
-            }
-            else
-            {
-                enemyRigidbody.linearVelocity = new Vector3(0, enemyRigidbody.linearVelocity.y, 0);
+                Vector3 movement = direction * _enemyModel.MoveSpeed * 0.5f * Time.fixedDeltaTime;
+
+                if (enemyRigidbody != null)
+                {
+                    enemyRigidbody.MovePosition(enemyRigidbody.position + movement);
+                    // Обновляем позицию в модели после движения
+                    _enemyModel.SetPosition(enemyRigidbody.position);
+                }
+                else
+                {
+                    transform.position += movement;
+                    // Обновляем позицию в модели после движения
+                    _enemyModel.SetPosition(transform.position);
+                }
             }
         }
 
         /// <summary>
-        /// Атака игрока
+        /// Атака игрока (вызывается презентером)
         /// </summary>
-        private void AttackPlayer()
+        public void AttackPlayer()
         {
-            if (!_canAttack || _isAttacking) return;
+            if (_enemyModel == null || _isAttackCoroutineRunning)
+            {
+                Debug.Log($"EnemyView: AttackPlayer blocked - Model null: {_enemyModel == null}, Coroutine running: {_isAttackCoroutineRunning}");
+                return;
+            }
 
-            _isAttacking = true;
-            _canAttack = false;
-            _lastAttackTime = Time.time;
+            Debug.Log($"EnemyView: Starting attack - CanAttack: {_enemyModel.CanAttack}, IsAttacking: {_enemyModel.IsAttacking}");
 
             // Останавливаем движение во время атаки
             StopMovement();
@@ -206,7 +208,12 @@ namespace CrossFightUnlock.Views
             // Запускаем анимацию атаки
             if (enemyAnimator != null)
             {
-                enemyAnimator.SetTrigger("Attack");
+                enemyAnimator.Play("Attack");
+                Debug.Log("EnemyView: Attack animation started");
+            }
+            else
+            {
+                Debug.LogWarning("EnemyView: EnemyAnimator is null!");
             }
 
             // Логируем атаку
@@ -221,13 +228,22 @@ namespace CrossFightUnlock.Views
         /// </summary>
         private IEnumerator AttackCooldownCoroutine()
         {
+            _isAttackCoroutineRunning = true;
+            Debug.Log("EnemyView: Attack cooldown coroutine started");
+
             // Ждем завершения атаки
             yield return new WaitForSeconds(0.5f); // Время анимации атаки
-            _isAttacking = false;
 
-            // Ждем кулдаун
-            yield return new WaitForSeconds(attackCooldown - 0.5f);
-            _canAttack = true;
+            Debug.Log("EnemyView: Attack cooldown finished, calling FinishAttack");
+
+            // Завершаем атаку в модели (модель сама вызовет событие)
+            if (_enemyModel != null)
+            {
+                _enemyModel.FinishAttack();
+            }
+
+            _isAttackCoroutineRunning = false;
+            Debug.Log("EnemyView: Attack cooldown coroutine finished");
         }
 
         /// <summary>
@@ -238,137 +254,124 @@ namespace CrossFightUnlock.Views
             if (enemyAnimator == null) return;
 
             // Анимация движения
-            bool isMoving = _isPlayerDetected && _distanceToPlayer > stoppingDistance && !_isAttacking;
-            enemyAnimator.SetBool("IsMoving", isMoving);
 
-            // Анимация атаки
-            enemyAnimator.SetBool("IsAttacking", _isAttacking);
-
-            // Скорость движения для анимации
-            float moveSpeedValue = isMoving ? moveSpeed : 0f;
-            enemyAnimator.SetFloat("MoveSpeed", moveSpeedValue);
         }
 
         /// <summary>
-        /// Получение урона
+        /// Получение урона (вызывается презентером)
         /// </summary>
         public void TakeDamage(float damage)
         {
-            _health -= damage;
-
-            if (_health <= 0)
-            {
-                Die();
-            }
+            // View не должен напрямую изменять модель
+            // Это должно делаться через презентер
+            Debug.Log($"EnemyView: Taking damage {damage}");
         }
 
         /// <summary>
-        /// Смерть врага
-        /// </summary>
-        private void Die()
-        {
-            Debug.Log($"Enemy {gameObject.name} died!");
-            Destroy(gameObject);
-        }
-
-        /// <summary>
-        /// Установка агрессивности
+        /// Установка агрессивности (вызывается презентером)
         /// </summary>
         public void SetAggressive(bool aggressive)
         {
-            _isAggressive = aggressive;
+            // View не должен напрямую изменять модель
+            Debug.Log($"EnemyView: Set aggressive {aggressive}");
         }
 
         /// <summary>
-        /// Установка дистанции обнаружения
+        /// Установка дистанции обнаружения (вызывается презентером)
         /// </summary>
         public void SetDetectionRange(float range)
         {
-            detectionRange = range;
+            // View не должен напрямую изменять модель
+            Debug.Log($"EnemyView: Set detection range {range}");
         }
 
         /// <summary>
-        /// Установка игрока для преследования
+        /// Установка игрока для преследования (вызывается презентером)
         /// </summary>
         public void SetPlayer(Transform player)
         {
-            _playerTransform = player;
+            // View не должен напрямую изменять модель
+            Debug.Log($"EnemyView: Set player {player?.name}");
         }
 
         #region Private Methods
-
-        /// <summary>
-        /// Обновление обнаружения игрока
-        /// </summary>
-        private void UpdatePlayerDetection()
-        {
-            if (_playerTransform == null) return;
-
-            _distanceToPlayer = Vector3.Distance(transform.position, _playerTransform.position);
-            _isPlayerDetected = _distanceToPlayer <= detectionRange;
-
-            if (_isPlayerDetected)
-            {
-                _lastPlayerPosition = _playerTransform.position;
-            }
-        }
-
-        /// <summary>
-        /// Обновление поведения врага
-        /// </summary>
-        private void UpdateBehavior()
-        {
-            if (!_isPlayerDetected || !_isAggressive) return;
-
-            // Проверяем возможность атаки
-            if (_distanceToPlayer <= attackRange && _canAttack)
-            {
-                AttackPlayer();
-            }
-
-            // Обновляем анимации
-            UpdateAnimations();
-        }
 
         /// <summary>
         /// Обновление движения врага
         /// </summary>
         private void UpdateMovement()
         {
-            if (!_isPlayerDetected || !_isAggressive || _isAttacking) return;
+            if (_enemyModel == null) return;
 
-            // Если игрок слишком близко, останавливаемся
-            if (_distanceToPlayer <= stoppingDistance)
+            // Обновляем позицию в модели
+            _enemyModel.SetPosition(transform.position);
+
+            // Если враг должен остановиться
+            if (_enemyModel.ShouldStop())
             {
                 StopMovement();
                 return;
             }
 
-            // Двигаемся к игроку
-            MoveTowardsPlayer();
+            // Если враг должен двигаться к игроку
+            if (_enemyModel.ShouldMoveTowardsPlayer())
+            {
+                MoveTowardsPlayer();
+            }
+            // Если враг должен вернуться на начальную позицию
+            else if (_enemyModel.ShouldReturnToStartPosition())
+            {
+                ReturnToStartPosition();
+            }
         }
 
         #endregion
 
+        /// <summary>
+        /// Обработка события смерти врага
+        /// </summary>
+        private void OnEnemyDeath(GameObject deadEnemy)
+        {
+            // Проверяем, что событие относится к этому врагу
+            if (deadEnemy == gameObject)
+            {
+                Debug.Log($"Enemy {gameObject.name} died, hiding...");
+                Hide();
+            }
+        }
+
         private void OnDrawGizmosSelected()
         {
+            if (_enemyModel == null) return;
+
             // Рисуем радиус обнаружения
-            Gizmos.color = _isPlayerDetected ? Color.red : Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, detectionRange);
+            Gizmos.color = _enemyModel.IsPlayerDetected ? Color.red : Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, _enemyModel.DetectionRange);
 
             // Рисуем радиус атаки
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, attackRange);
+            Gizmos.DrawWireSphere(transform.position, _enemyModel.AttackRange);
 
             // Дистанция остановки
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+            Gizmos.DrawWireSphere(transform.position, _enemyModel.StoppingDistance);
 
             // Линия к игроку
-            if (_playerTransform != null && _isPlayerDetected)
+            if (_enemyModel.IsPlayerDetected)
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position, _playerTransform.position);
+                Gizmos.DrawLine(transform.position, _enemyModel.LastPlayerPosition);
+            }
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            Debug.Log($"[EnemyView] OnTriggerEnter {other.gameObject.name} {other.tag}");
+            if (other.CompareTag("PlayerFist"))
+            {
+                _gameEvents.OnPlayerAttackedEnemy?.Invoke(gameObject);
+                // Уведомляем презентер о получении урона через существующее событие
+                // Презентер будет слушать OnPlayerAttackedEnemy и обрабатывать урон
             }
         }
     }

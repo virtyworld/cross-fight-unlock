@@ -505,8 +505,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb2a5247e9b68542a62e55820d1e8a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSettings: {fileID: 0}
-  target: {fileID: 0}
 --- !u!1 &350006156
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,7 +1283,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1077612532}
   - component: {fileID: 1077612531}
-  - component: {fileID: 1077612533}
   m_Layer: 0
   m_Name: EnemySpawn
   m_TagString: Untagged
@@ -1305,7 +1302,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdb1d55ae249874eaf3a34f90a40dae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _presenter: {fileID: 1077612533}
+  spawnSettings: {fileID: 11400000, guid: 1fbe1be26493aa241b00dcdc169a2392, type: 2}
+  finishTriggerView: {fileID: 1754771508}
+  playerTransform: {fileID: 0}
+  autoFindPlayer: 1
+  showDebugInfo: 0
+  enableGizmos: 0
 --- !u!4 &1077612532
 Transform:
   m_ObjectHideFlags: 0
@@ -1321,24 +1323,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 594968749}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1077612533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1077612530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb033c7ce1e8fe14a8e76652e8b62b72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnSettings: {fileID: 11400000, guid: 1fbe1be26493aa241b00dcdc169a2392, type: 2}
-  finishTriggerView: {fileID: 1754771508}
-  playerTransform: {fileID: 0}
-  autoFindPlayer: 1
-  showDebugInfo: 0
-  enableGizmos: 0
 --- !u!1 &1090196357
 GameObject:
   m_ObjectHideFlags: 0

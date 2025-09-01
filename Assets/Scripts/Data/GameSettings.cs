@@ -11,6 +11,7 @@ namespace CrossFightUnlock.Data
         [Header("Player Settings")]
         [SerializeField] private float playerMoveSpeed = 5f;
         [SerializeField] private float playerJumpForce = 10f;
+        [SerializeField] private float playerMaxHealth = 100f;
 
         [Header("Game Settings")]
         [SerializeField] private float gameTimeScale = 1f;
@@ -23,6 +24,7 @@ namespace CrossFightUnlock.Data
         // Свойства для доступа к настройкам
         public float PlayerMoveSpeed => playerMoveSpeed;
         public float PlayerJumpForce => playerJumpForce;
+        public float PlayerMaxHealth => playerMaxHealth;
         public float GameTimeScale => gameTimeScale;
         public bool EnableDebugMode => enableDebugMode;
         public float InputDeadZone => inputDeadZone;
@@ -35,6 +37,7 @@ namespace CrossFightUnlock.Data
         {
             playerMoveSpeed = 5f;
             playerJumpForce = 10f;
+            playerMaxHealth = 100f;
             gameTimeScale = 1f;
             enableDebugMode = false;
             inputDeadZone = 0.1f;

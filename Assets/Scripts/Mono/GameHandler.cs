@@ -24,15 +24,17 @@ namespace CrossFightUnlock.Mono
         [Header("Managers")]
         [SerializeField] private InputManager _inputManager;
         [SerializeField] private ObjectLinesManager _objectLinesManager;
-
         [SerializeField] private EnemySpawnManager _enemySpawnManager;
+        [SerializeField] private CameraManager _cameraManager;
         [Header("Game State")]
         [SerializeField] private bool _isGamePaused = false;
         [SerializeField] private bool _isGameInitialized = false;
+        [SerializeField] private UIHandler _uiHandler;
 
 
         private InputManager _input;
         private GameEvents _gameEvents;
+
         #region Unity Lifecycle
 
         private void Awake()
@@ -44,11 +46,14 @@ namespace CrossFightUnlock.Mono
         {
             SubscribeToEvents();
             InitInputManager();
+            InitCameraManager();
             InitPlayer();
             InitObjectLinesManager();
             InitEnemySpawnManager();
+            InitUIHandler();
             StartGame();
         }
+
 
         private void OnDestroy()
         {
@@ -80,9 +85,6 @@ namespace CrossFightUnlock.Mono
             _gameEvents.OnGamePause.AddListener(HandleGamePause);
             _gameEvents.OnGameResume.AddListener(HandleGameResume);
             _gameEvents.OnGameEnd.AddListener(HandleGameEnd);
-
-            _gameEvents.OnPlayerSpawned.AddListener(HandlePlayerSpawned);
-            _gameEvents.OnPlayerDeath.AddListener(HandlePlayerDeath);
             _gameEvents.OnCleanup.AddListener(HandleCleanup);
         }
         private void InitInputManager()
@@ -103,7 +105,14 @@ namespace CrossFightUnlock.Mono
         {
             _enemySpawnManager.Initialize(_gameEvents);
         }
-
+        private void InitUIHandler()
+        {
+            _uiHandler.Initialize(_gameEvents);
+        }
+        private void InitCameraManager()
+        {
+            _cameraManager.Initialize(_gameEvents);
+        }
 
         /// <summary>
         /// Отписка от игровых событий
@@ -116,9 +125,6 @@ namespace CrossFightUnlock.Mono
             _gameEvents.OnGamePause.RemoveListener(HandleGamePause);
             _gameEvents.OnGameResume.RemoveListener(HandleGameResume);
             _gameEvents.OnGameEnd.RemoveListener(HandleGameEnd);
-
-            _gameEvents.OnPlayerSpawned.RemoveListener(HandlePlayerSpawned);
-            _gameEvents.OnPlayerDeath.RemoveListener(HandlePlayerDeath);
             _gameEvents.OnCleanup.RemoveListener(HandleCleanup);
         }
 
@@ -202,28 +208,13 @@ namespace CrossFightUnlock.Mono
             Debug.Log("Game end event received");
         }
 
-        private void HandlePlayerSpawned()
-        {
-            Debug.Log("Player spawned event received");
-        }
 
-        private void HandlePlayerDeath()
-        {
-            Debug.Log("Player death event received");
-
-            StartCoroutine(RespawnPlayer());
-        }
 
         private void HandleCleanup()
         {
             Debug.Log("Cleanup event received");
         }
 
-        private IEnumerator RespawnPlayer()
-        {
-            yield return new WaitForSeconds(2f);
-            _gameEvents.OnPlayerRespawn?.Invoke();
-        }
         #endregion
 
         #region Cleanup

@@ -65,6 +65,10 @@ namespace CrossFightUnlock.Presenters
             _view.Initialize();
             _view.SetPosition(_playerModel.Position);
             _view.Show();
+
+            // Вызываем событие спавна игрока
+            _gameEvents.OnPlayerSpawned?.Invoke();
+            Debug.Log("PlayerPresenter: Player spawned event invoked");
         }
         /// <summary>
         /// Подписка на события
@@ -78,6 +82,7 @@ namespace CrossFightUnlock.Presenters
             _gameEvents.OnPlayerAttackInput.AddListener(HandlePlayerAttackInput);
             _gameEvents.OnPlayerRespawn.AddListener(RespawnPlayer);
             _gameEvents.OnCleanup.AddListener(HandleCleanup);
+            _gameEvents.OnPlayerAttackInput.AddListener(HandlePlayerAttackInput);
         }
 
         /// <summary>
@@ -142,6 +147,7 @@ namespace CrossFightUnlock.Presenters
             if (!_isInitialized || _playerModel == null) return;
 
             // Здесь можно добавить логику атаки
+            _view.HandlePlayerAttackInput();
             Debug.Log("Player attack input received");
         }
 
@@ -218,5 +224,6 @@ namespace CrossFightUnlock.Presenters
             _gameEvents = null;
             _isInitialized = false;
         }
+
     }
 }

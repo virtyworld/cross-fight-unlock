@@ -7,6 +7,8 @@ TagManager:
   - EndOfTheRoad
   - FinishTrigger
   - Enemy
+  - PlayerFist
+  - EnemyFist
   layers:
   - Default
   - TransparentFX

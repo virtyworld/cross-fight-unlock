@@ -21,3 +21,8 @@ MonoBehaviour:
   spawnOnTriggerEnter: 1
   enemiesAggressive: 1
   enemyDetectionRange: 100
+  enemyMoveSpeed: 4
+  enemyRotationSpeed: 3
+  enemyAttackRange: 1.5
+  enemyAttackCooldown: 3
+  enemyStoppingDistance: 1.5

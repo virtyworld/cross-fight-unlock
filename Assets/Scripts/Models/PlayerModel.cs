@@ -37,7 +37,7 @@ namespace CrossFightUnlock.Models
 
         public void Initialize()
         {
-            _maxHealth = 100f;
+            _maxHealth = _gameSettings.PlayerMaxHealth;
             _health = _maxHealth;
             _position = _startPosition;
             _isAlive = true;

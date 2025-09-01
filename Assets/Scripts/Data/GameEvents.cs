@@ -12,7 +12,7 @@ namespace CrossFightUnlock.Data
         private UnityEvent onPlayerRespawn;
         private UnityEvent<float> onPlayerHealthChanged;
         private UnityEvent<Vector3> onPlayerPositionChanged;
-
+        private UnityEvent<GameObject> onPlayerAttackedEnemy;
         // Game State Events
         private UnityEvent onGameStart;
         private UnityEvent onGamePause;
@@ -32,6 +32,15 @@ namespace CrossFightUnlock.Data
         private UnityEvent onEnemySpawnTriggered;
         private UnityEvent<GameObject> onEnemySpawned;
         private UnityEvent<GameObject> onEnemyDestroyed;
+        private UnityEvent<GameObject> onEnemyAttackedPlayer;
+
+        // Enemy Events
+        private UnityEvent onEnemyAttackStarted;
+        private UnityEvent onEnemyAttackFinished;
+        private UnityEvent<float> onEnemyHealthChanged;
+        private UnityEvent<float> onEnemyTakeDamage;
+        private UnityEvent<GameObject> onEnemyDeath;
+        private UnityEvent<Vector3> onEnemyPositionChanged;
 
         // Finish Trigger Events
         private UnityEvent<GameObject> onFinishTriggerEntered;
@@ -46,6 +55,7 @@ namespace CrossFightUnlock.Data
         public UnityEvent OnPlayerRespawn => onPlayerRespawn;
         public UnityEvent<float> OnPlayerHealthChanged => onPlayerHealthChanged;
         public UnityEvent<Vector3> OnPlayerPositionChanged => onPlayerPositionChanged;
+        public UnityEvent<GameObject> OnPlayerAttackedEnemy => onPlayerAttackedEnemy;
 
         public UnityEvent OnGameStart => onGameStart;
         public UnityEvent OnGamePause => onGamePause;
@@ -62,6 +72,14 @@ namespace CrossFightUnlock.Data
         public UnityEvent OnEnemySpawnTriggered => onEnemySpawnTriggered;
         public UnityEvent<GameObject> OnEnemySpawned => onEnemySpawned;
         public UnityEvent<GameObject> OnEnemyDestroyed => onEnemyDestroyed;
+        public UnityEvent<GameObject> OnEnemyAttackedPlayer => onEnemyAttackedPlayer;
+
+        public UnityEvent OnEnemyAttackStarted => onEnemyAttackStarted;
+        public UnityEvent OnEnemyAttackFinished => onEnemyAttackFinished;
+        public UnityEvent<float> OnEnemyHealthChanged => onEnemyHealthChanged;
+        public UnityEvent<float> OnEnemyTakeDamage => onEnemyTakeDamage;
+        public UnityEvent<GameObject> OnEnemyDeath => onEnemyDeath;
+        public UnityEvent<Vector3> OnEnemyPositionChanged => onEnemyPositionChanged;
 
         public UnityEvent<GameObject> OnFinishTriggerEntered => onFinishTriggerEntered;
         public UnityEvent<GameObject> OnFinishTriggerExited => onFinishTriggerExited;
@@ -79,7 +97,7 @@ namespace CrossFightUnlock.Data
             onPlayerRespawn = new UnityEvent();
             onPlayerHealthChanged = new UnityEvent<float>();
             onPlayerPositionChanged = new UnityEvent<Vector3>();
-
+            onPlayerAttackedEnemy = new UnityEvent<GameObject>();
             onGameStart = new UnityEvent();
             onGamePause = new UnityEvent();
             onGameResume = new UnityEvent();
@@ -95,6 +113,14 @@ namespace CrossFightUnlock.Data
             onEnemySpawnTriggered = new UnityEvent();
             onEnemySpawned = new UnityEvent<GameObject>();
             onEnemyDestroyed = new UnityEvent<GameObject>();
+            onEnemyAttackedPlayer = new UnityEvent<GameObject>();
+
+            onEnemyAttackStarted = new UnityEvent();
+            onEnemyAttackFinished = new UnityEvent();
+            onEnemyHealthChanged = new UnityEvent<float>();
+            onEnemyTakeDamage = new UnityEvent<float>();
+            onEnemyDeath = new UnityEvent<GameObject>();
+            onEnemyPositionChanged = new UnityEvent<Vector3>();
 
             onFinishTriggerEntered = new UnityEvent<GameObject>();
             onFinishTriggerExited = new UnityEvent<GameObject>();
@@ -113,6 +139,7 @@ namespace CrossFightUnlock.Data
             onPlayerHealthChanged?.RemoveAllListeners();
             onPlayerPositionChanged?.RemoveAllListeners();
 
+            onPlayerAttackedEnemy?.RemoveAllListeners();
             onGameStart?.RemoveAllListeners();
             onGamePause?.RemoveAllListeners();
             onGameResume?.RemoveAllListeners();
@@ -128,6 +155,14 @@ namespace CrossFightUnlock.Data
             onEnemySpawnTriggered?.RemoveAllListeners();
             onEnemySpawned?.RemoveAllListeners();
             onEnemyDestroyed?.RemoveAllListeners();
+            onEnemyAttackedPlayer?.RemoveAllListeners();
+
+            onEnemyAttackStarted?.RemoveAllListeners();
+            onEnemyAttackFinished?.RemoveAllListeners();
+            onEnemyHealthChanged?.RemoveAllListeners();
+            onEnemyTakeDamage?.RemoveAllListeners();
+            onEnemyDeath?.RemoveAllListeners();
+            onEnemyPositionChanged?.RemoveAllListeners();
 
             onFinishTriggerEntered?.RemoveAllListeners();
             onFinishTriggerExited?.RemoveAllListeners();

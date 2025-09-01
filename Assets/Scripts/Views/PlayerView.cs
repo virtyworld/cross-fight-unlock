@@ -21,7 +21,7 @@ namespace CrossFightUnlock.Views
 
         // События
         private GameEvents _gameEvents;
-
+        private float _health = 100f;
         // Состояние
         private bool _isInitialized = false;
         private bool _isVisible = true;
@@ -57,7 +57,14 @@ namespace CrossFightUnlock.Views
             }
 
             _isInitialized = true;
+
             Debug.Log("PlayerView initialized");
+        }
+
+        public void HandlePlayerAttackInput()
+        {
+            if (!_isInitialized) return;
+            _animator.Play("Attack");
         }
 
         public void Show()
@@ -116,11 +123,24 @@ namespace CrossFightUnlock.Views
             // Анимация движения (учитываем общую скорость движения)
             if (Animator != null)
             {
-                float totalSpeed = Mathf.Sqrt(direction.x * direction.x + direction.z * direction.z);
-                Animator.SetFloat("Speed", totalSpeed);
+                //float totalSpeed = Mathf.Sqrt(direction.x * direction.x + direction.z * direction.z);
+                //Animator.SetFloat("Speed", totalSpeed);
             }
         }
+        public void TakeDamage(float damage)
+        {
+            _health -= damage;
 
+            if (_health <= 0)
+            {
+                Die();
+            }
+        }
+        private void Die()
+        {
+            Debug.Log($"Player {gameObject.name} died!");
+            Hide();
+        }
         /// <summary>
         /// Прыжок игрока
         /// </summary>
@@ -170,13 +190,21 @@ namespace CrossFightUnlock.Views
         {
             _gameEvents = gameEvents;
         }
-
         private void OnDrawGizmosSelected()
         {
             if (GroundCheck != null)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireSphere(GroundCheck.position, _groundCheckRadius);
+            }
+        }
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log($"[PlayerView] OnTriggerEnter {other.gameObject.name} {other.tag}");
+            if (other.CompareTag("EnemyFist"))
+            {
+                _gameEvents.OnEnemyAttackedPlayer?.Invoke(other.gameObject);
+                TakeDamage(50);
             }
         }
     }
