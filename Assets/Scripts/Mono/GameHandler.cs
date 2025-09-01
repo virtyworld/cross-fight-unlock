@@ -25,7 +25,9 @@ namespace CrossFightUnlock.Mono
         [SerializeField] private InputManager _inputManager;
         [SerializeField] private ObjectLinesManager _objectLinesManager;
         [SerializeField] private EnemySpawnManager _enemySpawnManager;
+        [SerializeField] private ChestSpawnManager _chestSpawnManager;
         [SerializeField] private CameraManager _cameraManager;
+        [SerializeField] private UnlockPresenter _unlockPresenter;
         [Header("Game State")]
         [SerializeField] private bool _isGamePaused = false;
         [SerializeField] private bool _isGameInitialized = false;
@@ -50,7 +52,9 @@ namespace CrossFightUnlock.Mono
             InitPlayer();
             InitObjectLinesManager();
             InitEnemySpawnManager();
+            InitChestSpawnManager();
             InitUIHandler();
+            InitUnlockPresenter();
             StartGame();
         }
 
@@ -105,6 +109,10 @@ namespace CrossFightUnlock.Mono
         {
             _enemySpawnManager.Initialize(_gameEvents);
         }
+        private void InitChestSpawnManager()
+        {
+            _chestSpawnManager.Initialize(_gameEvents);
+        }
         private void InitUIHandler()
         {
             _uiHandler.Initialize(_gameEvents);
@@ -113,7 +121,10 @@ namespace CrossFightUnlock.Mono
         {
             _cameraManager.Initialize(_gameEvents);
         }
-
+        private void InitUnlockPresenter()
+        {
+            _unlockPresenter.Initialize(_gameEvents);
+        }
         /// <summary>
         /// Отписка от игровых событий
         /// </summary>

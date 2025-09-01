@@ -5,6 +5,7 @@ using CrossFightUnlock.Data;
 using CrossFightUnlock.Models;
 using CrossFightUnlock.Views;
 using CrossFightUnlock.Presenters;
+using UnityEngine.UI;
 
 namespace CrossFightUnlock.Managers
 {
@@ -165,6 +166,7 @@ namespace CrossFightUnlock.Managers
             _gameEvents.OnFinishTriggerExited.AddListener(OnFinishTriggerExited);
             _gameEvents.OnEnemySpawned.AddListener(OnEnemySpawned);
             _gameEvents.OnEnemyDestroyed.AddListener(OnEnemyDestroyed);
+            _gameEvents.OnEnemyDeath.AddListener(OnEnemyDeath);
         }
 
         /// <summary>
@@ -178,6 +180,7 @@ namespace CrossFightUnlock.Managers
             _gameEvents.OnFinishTriggerExited.RemoveListener(OnFinishTriggerExited);
             _gameEvents.OnEnemySpawned.RemoveListener(OnEnemySpawned);
             _gameEvents.OnEnemyDestroyed.RemoveListener(OnEnemyDestroyed);
+            _gameEvents.OnEnemyDeath.RemoveListener(OnEnemyDeath);
         }
 
         /// <summary>
@@ -205,8 +208,7 @@ namespace CrossFightUnlock.Managers
 
             Debug.Log("EnemySpawnManager: Finish trigger exited");
 
-            // Сбрасываем триггер
-            _spawnModel.ResetTrigger();
+
         }
 
         /// <summary>
@@ -230,7 +232,20 @@ namespace CrossFightUnlock.Managers
 
             // Удаляем врага из модели
             _spawnModel.RemoveSpawnedEnemy(enemy);
-            DestroyImmediate(enemy);
+            Destroy(enemy);
+        }
+
+        /// <summary>
+        /// Обработка события смерти врага
+        /// </summary>
+        private void OnEnemyDeath(GameObject deadEnemy)
+        {
+            if (!_isInitialized) return;
+
+            Debug.Log($"EnemySpawnManager: Enemy died: {deadEnemy.name}");
+
+            // Удаляем врага из модели
+            _spawnModel.RemoveSpawnedEnemy(deadEnemy);
         }
 
         /// <summary>
@@ -393,7 +408,7 @@ namespace CrossFightUnlock.Managers
             GUILayout.Label($"Spawned Enemies: {GetSpawnedEnemiesCount()}");
             GUILayout.Label($"Is Spawning: {IsSpawning()}");
             GUILayout.Label($"Can Spawn: {_spawnModel?.CanSpawnEnemies()}");
-            GUILayout.Label($"Remaining: {_spawnModel?.GetRemainingEnemiesToSpawn()}");
+
             GUILayout.EndArea();
         }
 

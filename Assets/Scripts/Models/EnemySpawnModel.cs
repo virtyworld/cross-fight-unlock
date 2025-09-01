@@ -16,14 +16,11 @@ namespace CrossFightUnlock.Models
 
         // Состояние
         private bool _isInitialized = false;
-        private bool _hasTriggered = false;
         private List<GameObject> _spawnedEnemies = new List<GameObject>();
 
-        // Свойства
-        public bool IsInitialized => _isInitialized;
-        public bool HasTriggered => _hasTriggered;
+        // Свойства       
         public int SpawnedEnemiesCount => _spawnedEnemies.Count;
-        public IReadOnlyList<GameObject> SpawnedEnemies => _spawnedEnemies.AsReadOnly();
+
 
         public EnemySpawnModel(EnemySpawnSettings spawnSettings, GameEvents gameEvents)
         {
@@ -35,7 +32,6 @@ namespace CrossFightUnlock.Models
         {
             if (_isInitialized) return;
 
-            _hasTriggered = false;
             _spawnedEnemies.Clear();
 
             _isInitialized = true;
@@ -55,22 +51,13 @@ namespace CrossFightUnlock.Models
         /// </summary>
         public void TriggerSpawn()
         {
-            if (!_isInitialized || _hasTriggered) return;
+            if (!_isInitialized) return;
 
-            _hasTriggered = true;
             _gameEvents.OnEnemySpawnTriggered?.Invoke();
 
             Debug.Log("Enemy spawn triggered");
         }
 
-        /// <summary>
-        /// Сброс состояния триггера
-        /// </summary>
-        public void ResetTrigger()
-        {
-            _hasTriggered = false;
-            Debug.Log("Enemy spawn trigger reset");
-        }
 
         /// <summary>
         /// Добавление врага в список заспавненных
@@ -94,6 +81,9 @@ namespace CrossFightUnlock.Models
             {
                 _gameEvents.OnEnemyDestroyed?.Invoke(enemy);
                 Debug.Log($"Enemy removed: {enemy.name}");
+
+                // Проверяем, уничтожены ли все враги
+                CheckAllEnemiesDestroyed();
             }
         }
 
@@ -127,15 +117,26 @@ namespace CrossFightUnlock.Models
         /// </summary>
         public bool CanSpawnEnemies()
         {
-            return _isInitialized && _hasTriggered && _spawnedEnemies.Count < _spawnSettings.EnemiesToSpawn;
+            return _isInitialized && _spawnedEnemies.Count < _spawnSettings.EnemiesToSpawn;
         }
 
         /// <summary>
         /// Получение количества врагов для спавна
         /// </summary>
-        public int GetRemainingEnemiesToSpawn()
+
+
+        /// <summary>
+        /// Проверка, уничтожены ли все враги
+        /// </summary>
+        private void CheckAllEnemiesDestroyed()
         {
-            return Mathf.Max(0, _spawnSettings.EnemiesToSpawn - _spawnedEnemies.Count);
+            Debug.Log($"Checking all enemies destroyed:  {_spawnedEnemies.Count}");
+            // Проверяем, что все враги заспавнены и все уничтожены
+            if (_spawnedEnemies.Count == 0)
+            {
+                _gameEvents.OnAllEnemiesDestroyed?.Invoke();
+                Debug.Log("All enemies destroyed!");
+            }
         }
     }
 }
