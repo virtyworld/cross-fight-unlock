@@ -51,7 +51,11 @@ namespace CrossFightUnlock.Data
         private UnityEvent<GameObject> onChestOpened;
         private UnityEvent onAllEnemiesDestroyed;
         private UnityEvent<bool> onShowChestButtonUI;
+        private UnityEvent onChestButtonClicked;
 
+        // Unlock Events
+        private UnityEvent onLockUnlocked;
+        private UnityEvent onRestartButtonClicked;
         // Cleanup Events
         private UnityEvent onCleanup;
 
@@ -93,8 +97,11 @@ namespace CrossFightUnlock.Data
         public UnityEvent<GameObject> OnChestSpawned => onChestSpawned;
         public UnityEvent<GameObject> OnChestOpened => onChestOpened;
         public UnityEvent<bool> OnShowChestButtonUI => onShowChestButtonUI;
+        public UnityEvent OnChestButtonClicked => onChestButtonClicked;
         public UnityEvent OnAllEnemiesDestroyed => onAllEnemiesDestroyed;
 
+        public UnityEvent OnLockUnlocked => onLockUnlocked;
+        public UnityEvent OnRestartButtonClicked => onRestartButtonClicked;
         public UnityEvent OnCleanup => onCleanup;
 
         /// <summary>
@@ -140,7 +147,9 @@ namespace CrossFightUnlock.Data
             onChestOpened = new UnityEvent<GameObject>();
             onShowChestButtonUI = new UnityEvent<bool>();
             onAllEnemiesDestroyed = new UnityEvent();
-
+            onChestButtonClicked = new UnityEvent();
+            onLockUnlocked = new UnityEvent();
+            onRestartButtonClicked = new UnityEvent();
             onCleanup = new UnityEvent();
         }
 
@@ -187,7 +196,9 @@ namespace CrossFightUnlock.Data
             onChestOpened?.RemoveAllListeners();
             onShowChestButtonUI?.RemoveAllListeners();
             onAllEnemiesDestroyed?.RemoveAllListeners();
-
+            onChestButtonClicked?.RemoveAllListeners();
+            onLockUnlocked?.RemoveAllListeners();
+            onRestartButtonClicked?.RemoveAllListeners();
             onCleanup?.RemoveAllListeners();
         }
     }

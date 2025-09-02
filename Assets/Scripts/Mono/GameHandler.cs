@@ -5,6 +5,7 @@ using CrossFightUnlock.Presenters;
 using CrossFightUnlock.Views;
 using CrossFightUnlock.Interfaces;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace CrossFightUnlock.Mono
 {
@@ -23,11 +24,12 @@ namespace CrossFightUnlock.Mono
 
         [Header("Managers")]
         [SerializeField] private InputManager _inputManager;
+        [SerializeField] private JoystickManager _joystickManager;
         [SerializeField] private ObjectLinesManager _objectLinesManager;
         [SerializeField] private EnemySpawnManager _enemySpawnManager;
         [SerializeField] private ChestSpawnManager _chestSpawnManager;
         [SerializeField] private CameraManager _cameraManager;
-        [SerializeField] private UnlockPresenter _unlockPresenter;
+        [SerializeField] private CrossFightUnlock.Presenters.UnlockPresenter _unlockPresenter;
         [Header("Game State")]
         [SerializeField] private bool _isGamePaused = false;
         [SerializeField] private bool _isGameInitialized = false;
@@ -48,6 +50,7 @@ namespace CrossFightUnlock.Mono
         {
             SubscribeToEvents();
             InitInputManager();
+            InitJoystickManager();
             InitCameraManager();
             InitPlayer();
             InitObjectLinesManager();
@@ -90,11 +93,19 @@ namespace CrossFightUnlock.Mono
             _gameEvents.OnGameResume.AddListener(HandleGameResume);
             _gameEvents.OnGameEnd.AddListener(HandleGameEnd);
             _gameEvents.OnCleanup.AddListener(HandleCleanup);
+            _gameEvents.OnRestartButtonClicked.AddListener(HandleRestartButtonClicked);
         }
         private void InitInputManager()
         {
             _inputManager.Initialize(_gameEvents);
             _input = _inputManager;
+        }
+        private void InitJoystickManager()
+        {
+            if (_joystickManager != null)
+            {
+                _joystickManager.Initialize(_gameEvents);
+            }
         }
         private void InitPlayer()
         {
@@ -137,6 +148,8 @@ namespace CrossFightUnlock.Mono
             _gameEvents.OnGameResume.RemoveListener(HandleGameResume);
             _gameEvents.OnGameEnd.RemoveListener(HandleGameEnd);
             _gameEvents.OnCleanup.RemoveListener(HandleCleanup);
+            _gameEvents.OnLockUnlocked.RemoveListener(HandleLockUnlocked);
+            _gameEvents.OnRestartButtonClicked.RemoveListener(HandleRestartButtonClicked);
         }
 
         #endregion
@@ -219,11 +232,29 @@ namespace CrossFightUnlock.Mono
             Debug.Log("Game end event received");
         }
 
+        private void HandleLockUnlocked()
+        {
+            Debug.Log("Lock unlocked event received");
+            PauseGame();
+        }
+
+        private void HandleRestartButtonClicked()
+        {
+            Debug.Log("Restart button clicked");
+            ResumeGame();
+            RestartGame();
+        }
 
 
         private void HandleCleanup()
         {
             Debug.Log("Cleanup event received");
+        }
+
+        private void RestartGame()
+        {
+            CleanupGame();
+            SceneManager.LoadScene(0);
         }
 
         #endregion

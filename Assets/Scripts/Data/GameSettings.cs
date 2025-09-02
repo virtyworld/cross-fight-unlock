@@ -18,7 +18,7 @@ namespace CrossFightUnlock.Data
         [SerializeField] private bool enableDebugMode = false;
 
         [Header("Input Settings")]
-        [SerializeField] private float inputDeadZone = 0.1f;
+        [SerializeField] private float inputDeadZone = 0.01f; // Еще больше уменьшили для максимальной чувствительности
         [SerializeField] private bool enableMouseLook = true;
 
         // Свойства для доступа к настройкам
@@ -40,7 +40,7 @@ namespace CrossFightUnlock.Data
             playerMaxHealth = 100f;
             gameTimeScale = 1f;
             enableDebugMode = false;
-            inputDeadZone = 0.1f;
+            inputDeadZone = 0.01f; // Обновили значение по умолчанию для максимальной чувствительности
             enableMouseLook = true;
         }
     }
