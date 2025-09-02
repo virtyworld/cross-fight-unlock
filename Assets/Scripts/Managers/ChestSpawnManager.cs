@@ -14,7 +14,6 @@ namespace CrossFightUnlock.Managers
     {
         [Header("Chest Spawn Settings")]
         [SerializeField] private GameObject _chestPrefab;
-        [SerializeField] private Button chestButton;
 
         [Header("Debug")]
         [SerializeField] private bool _showDebugInfo = true;
@@ -26,12 +25,7 @@ namespace CrossFightUnlock.Managers
         // Состояние
         private bool _isInitialized = false;
 
-        #region Unity Lifecycle
-
-        private void Awake()
-        {
-            chestButton.onClick.AddListener(OpenChest);
-        }
+        #region Unity Lifecycle       
 
         private void OnDestroy()
         {
@@ -116,10 +110,7 @@ namespace CrossFightUnlock.Managers
 
         #endregion
 
-        private void OpenChest()
-        {
-            _gameEvents.OnChestOpened?.Invoke(_chestModel?.ChestGameObject);
-        }
+
 
     }
 }

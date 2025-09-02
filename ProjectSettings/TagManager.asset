@@ -9,6 +9,10 @@ TagManager:
   - Enemy
   - PlayerFist
   - EnemyFist
+  - RedKey
+  - BlueKey
+  - GreenKey
+  - Obstacle
   layers:
   - Default
   - TransparentFX

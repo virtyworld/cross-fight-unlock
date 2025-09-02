@@ -12,18 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f0e28164a64b44babb654a55708ca6, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  playerMoveSpeed: 5
+  playerMoveSpeed: 10
   playerJumpForce: 10
   playerMaxHealth: 100
-  road1Speed: 2
-  road1Density: 0.5
-  road2Speed: 3
-  road2Density: 0.7
-  road3Speed: 4
-  road3Density: 0.9
-  obstacleSpawnInterval: 2
-  maxObstaclesPerRoad: 5
-  startPoint: {x: 0, y: 0, z: 0}
-  finishPoint: {x: 0, y: 0, z: 20}
-  roadWidth: 3
-  roadLength: 20
+  gameTimeScale: 1
+  enableDebugMode: 0
+  inputDeadZone: 0.05
+  enableMouseLook: 1

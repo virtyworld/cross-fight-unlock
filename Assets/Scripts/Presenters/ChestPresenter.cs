@@ -199,6 +199,7 @@ namespace CrossFightUnlock.Presenters
             {
                 Debug.Log($"ChestPresenter: Chest {gameObject.name} opened!");
                 // Здесь можно добавить дополнительную логику при открытии сундука
+                _gameEvents.OnChestButtonClicked?.Invoke();
             }
         }
 

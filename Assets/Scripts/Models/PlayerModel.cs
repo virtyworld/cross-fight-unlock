@@ -101,7 +101,6 @@ namespace CrossFightUnlock.Models
             _position = _startPosition;
             _isAlive = true;
             _isGrounded = false;
-            _gameEvents.OnPlayerRespawn?.Invoke();
         }
 
         /// <summary>

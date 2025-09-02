@@ -140,6 +140,7 @@ namespace CrossFightUnlock.Views
         {
             Debug.Log($"Player {gameObject.name} died!");
             Hide();
+            _gameEvents.OnPlayerDeath?.Invoke();
         }
         /// <summary>
         /// Прыжок игрока
@@ -205,6 +206,10 @@ namespace CrossFightUnlock.Views
             {
                 _gameEvents.OnEnemyAttackedPlayer?.Invoke(other.gameObject);
                 TakeDamage(50);
+            }
+            if (other.CompareTag("Obstacle"))
+            {
+                TakeDamage(100);
             }
         }
     }

@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using CrossFightUnlock.Data;
+using CrossFightUnlock.UI;
 
 namespace CrossFightUnlock.Managers
 {
@@ -11,6 +13,10 @@ namespace CrossFightUnlock.Managers
         [Header("Input Settings")]
         [SerializeField] private bool _enableInput = true;
         [SerializeField] private float _inputDeadZone = 0.1f;
+        [SerializeField] private bool _useMobileJoystick = false;
+
+        [Header("Mobile Joystick")]
+        [SerializeField] private MobileJoystick _mobileJoystick;
 
         // События игры
         private GameEvents _gameEvents;
@@ -24,6 +30,16 @@ namespace CrossFightUnlock.Managers
 
             _gameEvents = gameEvents;
 
+            // Инициализируем мобильный джойстик если он есть
+            if (_mobileJoystick != null)
+            {
+                _mobileJoystick.Initialize(_gameEvents);
+
+                // Автоматически определяем использование мобильного джойстика
+                _useMobileJoystick = Application.isMobilePlatform;
+                _mobileJoystick.SetVisible(_useMobileJoystick);
+            }
+
             // Подписываемся на событие очистки
             if (_gameEvents != null)
             {
@@ -32,7 +48,7 @@ namespace CrossFightUnlock.Managers
 
             _isInitialized = true;
 
-            Debug.Log("InputManager initialized");
+            Debug.Log($"InputManager initialized - Mobile Joystick: {_useMobileJoystick}");
         }
 
         public void Cleanup()
@@ -62,7 +78,12 @@ namespace CrossFightUnlock.Managers
         {
             if (!_isInitialized || !_enableInput || _gameEvents == null) return;
 
-            HandleMovementInput();
+            // Обрабатываем ввод только если не используем мобильный джойстик
+            if (!_useMobileJoystick)
+            {
+                HandleMovementInput();
+            }
+
             HandleJumpInput();
             HandleAttackInput();
         }
@@ -115,6 +136,12 @@ namespace CrossFightUnlock.Managers
             // Атака на левую кнопку мыши или J
             if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.J))
             {
+                // Проверяем, находится ли курсор над UI элементом
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                {
+                    return; // Игнорируем клик мыши, если курсор над UI
+                }
+
                 _gameEvents.OnPlayerAttackInput?.Invoke();
             }
         }
@@ -141,6 +168,37 @@ namespace CrossFightUnlock.Managers
         public bool IsInputEnabled()
         {
             return _enableInput;
+        }
+
+        /// <summary>
+        /// Переключение между клавиатурным и мобильным управлением
+        /// </summary>
+        public void SetMobileJoystickEnabled(bool enabled)
+        {
+            _useMobileJoystick = enabled;
+
+            if (_mobileJoystick != null)
+            {
+                _mobileJoystick.SetVisible(enabled);
+            }
+
+            Debug.Log($"Mobile joystick {(enabled ? "enabled" : "disabled")}");
+        }
+
+        /// <summary>
+        /// Получить состояние мобильного джойстика
+        /// </summary>
+        public bool IsMobileJoystickEnabled()
+        {
+            return _useMobileJoystick;
+        }
+
+        /// <summary>
+        /// Получить ссылку на мобильный джойстик
+        /// </summary>
+        public MobileJoystick GetMobileJoystick()
+        {
+            return _mobileJoystick;
         }
     }
 }

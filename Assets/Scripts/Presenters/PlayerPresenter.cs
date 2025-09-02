@@ -80,9 +80,9 @@ namespace CrossFightUnlock.Presenters
             _gameEvents.OnPlayerMoveInput.AddListener(HandlePlayerMoveInput);
             _gameEvents.OnPlayerJumpInput.AddListener(HandlePlayerJumpInput);
             _gameEvents.OnPlayerAttackInput.AddListener(HandlePlayerAttackInput);
-            _gameEvents.OnPlayerRespawn.AddListener(RespawnPlayer);
             _gameEvents.OnCleanup.AddListener(HandleCleanup);
             _gameEvents.OnPlayerAttackInput.AddListener(HandlePlayerAttackInput);
+            _gameEvents.OnPlayerDeath.AddListener(HandlePlayerDeath);
         }
 
         /// <summary>
@@ -95,8 +95,8 @@ namespace CrossFightUnlock.Presenters
             _gameEvents.OnPlayerMoveInput.RemoveListener(HandlePlayerMoveInput);
             _gameEvents.OnPlayerJumpInput.RemoveListener(HandlePlayerJumpInput);
             _gameEvents.OnPlayerAttackInput.RemoveListener(HandlePlayerAttackInput);
-            _gameEvents.OnPlayerRespawn.RemoveListener(RespawnPlayer);
             _gameEvents.OnCleanup.RemoveListener(HandleCleanup);
+            _gameEvents.OnPlayerDeath.RemoveListener(HandlePlayerDeath);
         }
 
         /// <summary>
@@ -106,11 +106,8 @@ namespace CrossFightUnlock.Presenters
         {
             if (!_isInitialized || _playerModel == null || _view == null) return;
 
-            // Применяем dead zone для всех осей
-            if (Mathf.Abs(input.x) < _gameSettings.InputDeadZone)
-                input.x = 0f;
-            if (Mathf.Abs(input.z) < _gameSettings.InputDeadZone)
-                input.z = 0f;
+            // НЕ применяем dead zone для мобильного джойстика - он уже обрабатывает это самостоятельно
+            // Dead zone применяется только в самом джойстике для максимальной чувствительности
 
             // Двигаем игрока
             float moveSpeed = _playerModel.GetMoveSpeed();
@@ -174,7 +171,7 @@ namespace CrossFightUnlock.Presenters
         public void HandlePlayerDeath()
         {
             if (!_isInitialized) return;
-
+            RespawnPlayer();
             Debug.Log("PlayerPresenter: Handling player death");
         }
 
@@ -189,7 +186,7 @@ namespace CrossFightUnlock.Presenters
 
             // Вызываем респаун в модели
             _playerModel.Respawn();
-
+            _gameEvents.OnPlayerRespawn?.Invoke();
             // Устанавливаем позицию представления на позицию спавна
             _view.SetPosition(_spawnPosition);
 
